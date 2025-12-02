@@ -1,389 +1,226 @@
 # UI/RegistrationPage.py
-"""
-Registration Page - New user registration interface
-"""
-
 import tkinter as tk
 from tkinter import messagebox
+
 from Controllers.UserController import UserController
 from Controllers.PassengerController import PassengerController
 from Controllers.DriverController import DriverController
+
 from config import (
-    LOGIN_WINDOW_WIDTH,
-    LOGIN_WINDOW_HEIGHT,
-    PRIMARY_COLOR,
-    SECONDARY_COLOR,
-    BG_COLOR,
-    TEXT_PRIMARY,
-    TEXT_LIGHT,
-    FONT_LARGE_HEADING,
-    FONT_LARGE,
-    FONT_MEDIUM,
-    FONT_NORMAL_REGULAR,
-    BTN_PRIMARY,
-    BTN_PRIMARY_HOVER,
-    BTN_SECONDARY,
-    INPUT_BG,
-    PADDING_LARGE,
-    PADDING_MEDIUM,
-    USER_TYPE_PASSENGER,
-    USER_TYPE_DRIVER,
-    validate_email,
-    validate_phone,
-    validate_license,
-    ERROR_REQUIRED_FIELD,
-    ERROR_WEAK_PASSWORD,
-    ERROR_PASSWORD_MISMATCH
+    BG_COLOR, PRIMARY_COLOR, TEXT_PRIMARY, TEXT_LIGHT,
+    FONT_LARGE_HEADING, FONT_LARGE, FONT_MEDIUM,
+    INPUT_BG, BTN_PRIMARY, BTN_PRIMARY_HOVER, BTN_SECONDARY,
+    USER_TYPE_PASSENGER, USER_TYPE_DRIVER,
+    validate_email, validate_phone, validate_license,
+    ERROR_REQUIRED_FIELD, ERROR_WEAK_PASSWORD, ERROR_PASSWORD_MISMATCH
 )
 
 
 class RegistrationPage:
-    """
-    Registration interface for new users (Passengers and Drivers)
-    """
-    
+
     def __init__(self, root, login_window):
-        """
-        Initialize Registration Page
-        
-        Args:
-            root: Registration window
-            login_window: Reference to login window
-        """
         self.root = root
         self.login_window = login_window
-        
-        # Controllers
+
+        # controllers
         self.user_ctrl = UserController()
         self.passenger_ctrl = PassengerController()
         self.driver_ctrl = DriverController()
-        
-        # Variables
+
+        # variable
         self.user_type_var = tk.StringVar(value=USER_TYPE_PASSENGER)
-        
-        self.setup_window()
-        self.create_widgets()
-    
-    def setup_window(self):
-        """Configure the registration window"""
-        self.root.title("Taxi Booking System - Register")
-        
-        # Center the window (slightly larger than login)
-        window_width = 500
-        window_height = 650
-        screen_width = self.root.winfo_screenwidth()
-        screen_height = self.root.winfo_screenheight()
-        x = (screen_width - window_width) // 2
-        y = (screen_height - window_height) // 2
-        
-        self.root.geometry(f"{window_width}x{window_height}+{x}+{y}")
+
+        self._setup_window()
+        self._build_ui()
+
+    # ------------------------------------------------------------------
+    # WINDOW SETUP
+    # ------------------------------------------------------------------
+    def _setup_window(self):
+        self.root.title("Register - Taxi Booking System")
+        width, height = 500, 750
+        sw = self.root.winfo_screenwidth()
+        sh = self.root.winfo_screenheight()
+        x = (sw - width) // 2
+        y = (sh - height) // 2
+        self.root.geometry(f"{width}x{height}+{x}+{y}")
         self.root.resizable(False, False)
         self.root.configure(bg=BG_COLOR)
-    
-    def create_widgets(self):
-        """Create and layout all UI components"""
-        
-        # Main container with scrollbar
-        main_canvas = tk.Canvas(self.root, bg=BG_COLOR, highlightthickness=0)
-        scrollbar = tk.Scrollbar(self.root, orient="vertical", command=main_canvas.yview)
-        scrollable_frame = tk.Frame(main_canvas, bg=BG_COLOR)
-        
-        scrollable_frame.bind(
+
+    # ------------------------------------------------------------------
+    # UI BUILD
+    # ------------------------------------------------------------------
+    def _build_ui(self):
+        # Canvas + scrollbar to make the page scrollable
+        canvas = tk.Canvas(self.root, bg=BG_COLOR, highlightthickness=0)
+        v_scroll = tk.Scrollbar(self.root, orient="vertical", command=canvas.yview)
+        canvas.configure(yscrollcommand=v_scroll.set)
+
+        canvas.pack(side="left", fill="both", expand=True)
+        v_scroll.pack(side="right", fill="y")
+
+        main = tk.Frame(canvas, bg=BG_COLOR)
+        canvas.create_window((0, 0), window=main, anchor="nw")
+
+        # Update scroll region when content size changes
+        main.bind(
             "<Configure>",
-            lambda e: main_canvas.configure(scrollregion=main_canvas.bbox("all"))
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
         )
-        
-        main_canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        main_canvas.configure(yscrollcommand=scrollbar.set)
-        
-        # Header
-        header_frame = tk.Frame(scrollable_frame, bg=BG_COLOR)
-        header_frame.pack(pady=(20, PADDING_LARGE), padx=40)
-        
-        tk.Label(
-            header_frame,
-            text="🚕",
-            font=("Segoe UI", 36),
-            bg=BG_COLOR
-        ).pack()
-        
-        tk.Label(
-            header_frame,
-            text="Create New Account",
-            font=FONT_LARGE_HEADING,
-            bg=BG_COLOR,
-            fg=PRIMARY_COLOR
-        ).pack(pady=(10, 5))
-        
-        tk.Label(
-            header_frame,
-            text="Register as Passenger or Driver",
-            font=FONT_MEDIUM,
-            bg=BG_COLOR,
-            fg=TEXT_PRIMARY
-        ).pack()
-        
-        # Form container
-        form_frame = tk.Frame(scrollable_frame, bg=BG_COLOR)
-        form_frame.pack(padx=40, pady=PADDING_MEDIUM, fill='x')
-        
-        # User Type Selection
-        tk.Label(
-            form_frame,
-            text="Register As:",
-            font=FONT_LARGE,
-            bg=BG_COLOR,
-            fg=TEXT_PRIMARY
-        ).pack(anchor='w', pady=(0, 5))
-        
-        type_frame = tk.Frame(form_frame, bg=BG_COLOR)
-        type_frame.pack(fill='x', pady=(0, PADDING_MEDIUM))
-        
-        tk.Radiobutton(
-            type_frame,
-            text="🙋 Passenger",
-            variable=self.user_type_var,
-            value=USER_TYPE_PASSENGER,
-            font=FONT_MEDIUM,
-            bg=BG_COLOR,
-            fg=TEXT_PRIMARY,
-            selectcolor=BG_COLOR,
-            activebackground=BG_COLOR,
-            command=self.on_user_type_change
-        ).pack(side='left', padx=(0, 20))
-        
-        tk.Radiobutton(
-            type_frame,
-            text="🚗 Driver",
-            variable=self.user_type_var,
-            value=USER_TYPE_DRIVER,
-            font=FONT_MEDIUM,
-            bg=BG_COLOR,
-            fg=TEXT_PRIMARY,
-            selectcolor=BG_COLOR,
-            activebackground=BG_COLOR,
-            command=self.on_user_type_change
-        ).pack(side='left')
-        
-        # Common fields
-        self.create_field(form_frame, "Full Name:", "name_entry")
-        self.create_field(form_frame, "Email:", "email_entry")
-        self.create_field(form_frame, "Phone (10 digits):", "phone_entry")
-        
-        # Address field (larger)
-        tk.Label(
-            form_frame,
-            text="Address:",
-            font=FONT_LARGE,
-            bg=BG_COLOR,
-            fg=TEXT_PRIMARY
-        ).pack(anchor='w', pady=(PADDING_MEDIUM, 5))
-        
-        self.address_text = tk.Text(
-            form_frame,
-            font=FONT_MEDIUM,
-            bg=INPUT_BG,
-            fg=TEXT_PRIMARY,
-            relief='solid',
-            borderwidth=1,
-            height=3
+
+        # Mouse wheel scrolling
+        canvas.bind_all(
+            "<MouseWheel>",
+            lambda e: canvas.yview_scroll(int(-1 * (e.delta / 120)), "units")
         )
-        self.address_text.pack(fill='x')
-        
-        # Driver-specific fields (initially hidden)
-        self.driver_frame = tk.Frame(form_frame, bg=BG_COLOR)
-        
-        tk.Label(
-            self.driver_frame,
-            text="License Number (8-15 chars):",
-            font=FONT_LARGE,
-            bg=BG_COLOR,
-            fg=TEXT_PRIMARY
-        ).pack(anchor='w', pady=(PADDING_MEDIUM, 5))
-        
-        self.license_entry = tk.Entry(
-            self.driver_frame,
-            font=FONT_MEDIUM,
-            bg=INPUT_BG,
-            fg=TEXT_PRIMARY,
-            relief='solid',
-            borderwidth=1
-        )
-        self.license_entry.pack(fill='x', ipady=8)
-        
-        # Login credentials
-        tk.Label(
-            form_frame,
-            text="Username:",
-            font=FONT_LARGE,
-            bg=BG_COLOR,
-            fg=TEXT_PRIMARY
-        ).pack(anchor='w', pady=(PADDING_MEDIUM, 5))
-        
-        self.username_entry = tk.Entry(
-            form_frame,
-            font=FONT_MEDIUM,
-            bg=INPUT_BG,
-            fg=TEXT_PRIMARY,
-            relief='solid',
-            borderwidth=1
-        )
-        self.username_entry.pack(fill='x', ipady=8)
-        
-        self.create_field(form_frame, "Password (min 6 chars):", "password_entry", show="●")
-        self.create_field(form_frame, "Confirm Password:", "confirm_password_entry", show="●")
-        
-        # Register button
-        self.register_button = tk.Button(
-            form_frame,
-            text="REGISTER",
-            font=FONT_LARGE,
-            bg=BTN_PRIMARY,
-            fg=TEXT_LIGHT,
-            activebackground=BTN_PRIMARY_HOVER,
-            activeforeground=TEXT_LIGHT,
-            cursor='hand2',
-            relief='flat',
-            command=self.handle_registration
-        )
-        self.register_button.pack(fill='x', ipady=12, pady=(PADDING_LARGE, PADDING_MEDIUM))
-        
-        # Hover effects
-        self.register_button.bind('<Enter>', lambda e: self.register_button.config(bg=BTN_PRIMARY_HOVER))
-        self.register_button.bind('<Leave>', lambda e: self.register_button.config(bg=BTN_PRIMARY))
-        
-        # Back to login button
-        back_button = tk.Button(
-            form_frame,
-            text="← Back to Login",
-            font=FONT_MEDIUM,
-            bg=BTN_SECONDARY,
-            fg=TEXT_PRIMARY,
-            cursor='hand2',
-            relief='flat',
-            command=self.back_to_login
-        )
-        back_button.pack(fill='x', ipady=8)
-        
-        # Pack canvas and scrollbar
-        main_canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
-        
-        # Bind mousewheel
-        main_canvas.bind_all("<MouseWheel>", lambda e: main_canvas.yview_scroll(int(-1*(e.delta/120)), "units"))
-    
-    def create_field(self, parent, label_text, entry_name, show=None):
-        """Helper to create labeled entry fields"""
-        tk.Label(
-            parent,
-            text=label_text,
-            font=FONT_LARGE,
-            bg=BG_COLOR,
-            fg=TEXT_PRIMARY
-        ).pack(anchor='w', pady=(PADDING_MEDIUM, 5))
-        
-        entry = tk.Entry(
-            parent,
-            font=FONT_MEDIUM,
-            bg=INPUT_BG,
-            fg=TEXT_PRIMARY,
-            relief='solid',
-            borderwidth=1,
-            show=show
-        )
-        entry.pack(fill='x', ipady=8)
-        setattr(self, entry_name, entry)
-    
-    def on_user_type_change(self):
-        """Show/hide driver-specific fields based on user type"""
+
+        # Heading
+        tk.Label(main, text="Create New Account",
+                 font=FONT_LARGE_HEADING, fg=PRIMARY_COLOR, bg=BG_COLOR).pack(pady=(10, 5))
+
+        tk.Label(main, text="Register as Passenger or Driver",
+                 font=FONT_MEDIUM, fg=TEXT_PRIMARY, bg=BG_COLOR).pack(pady=(0, 15))
+
+        # Form Frame
+        form = tk.Frame(main, bg=BG_COLOR)
+        form.pack(fill='x', padx=20)
+
+        # User type
+        tk.Label(form, text="Register As:", font=FONT_LARGE,
+                 bg=BG_COLOR, fg=TEXT_PRIMARY).pack(anchor="w")
+
+        type_frame = tk.Frame(form, bg=BG_COLOR)
+        type_frame.pack(anchor="w", pady=5)
+
+        tk.Radiobutton(type_frame, text="Passenger", variable=self.user_type_var,
+                       value=USER_TYPE_PASSENGER, font=FONT_MEDIUM,
+                       bg=BG_COLOR, fg=TEXT_PRIMARY, activebackground=BG_COLOR,
+                       command=self._toggle_driver_fields).pack(side="left", padx=10)
+
+        tk.Radiobutton(type_frame, text="Driver", variable=self.user_type_var,
+                       value=USER_TYPE_DRIVER, font=FONT_MEDIUM,
+                       bg=BG_COLOR, fg=TEXT_PRIMARY, activebackground=BG_COLOR,
+                       command=self._toggle_driver_fields).pack(side="left", padx=10)
+
+        # Common Input Fields
+        self.name_entry = self._field(form, "Full Name")
+        self.email_entry = self._field(form, "Email")
+        self.phone_entry = self._field(form, "Phone Number (10 digits)")
+
+        # Driver-only fields
+        self.driver_frame = tk.Frame(form, bg=BG_COLOR)
+        self.license_entry = self._field(self.driver_frame, "Driver License (8-15 chars)")
+
+        # Address
+        tk.Label(form, text="Address:", font=FONT_LARGE,
+                 bg=BG_COLOR, fg=TEXT_PRIMARY).pack(anchor='w')
+        self.address_text = tk.Text(form, height=2, bg=INPUT_BG, font=FONT_MEDIUM, width=50)
+        self.address_text.pack(fill='x', pady=5)
+
+        # Account credentials
+        self.username_entry = self._field(form, "Username")
+        self.password_entry = self._field(form, "Password (min 6 chars)", show="*")
+        self.conf_password_entry = self._field(form, "Confirm Password", show="*")
+
+        # Button: Register
+        self.register_btn = tk.Button(form, text="REGISTER", font=FONT_LARGE,
+                                      bg=BTN_PRIMARY, fg=TEXT_LIGHT, command=self._register)
+        self.register_btn.pack(fill='x', pady=20, ipady=8)
+
+        self.register_btn.bind("<Enter>", lambda e: self.register_btn.config(bg=BTN_PRIMARY_HOVER))
+        self.register_btn.bind("<Leave>", lambda e: self.register_btn.config(bg=BTN_PRIMARY))
+
+        # Back to login
+        tk.Button(form, text="Back to Login", bg=BTN_SECONDARY, fg=TEXT_PRIMARY,
+                  font=FONT_MEDIUM, command=self._back).pack(fill='x', ipady=6)
+
+        self._toggle_driver_fields()
+
+    # ------------------------------------------------------------------
+    # FIELD CREATION
+    # ------------------------------------------------------------------
+    def _field(self, parent, label, show=None):
+        tk.Label(parent, text=label, font=FONT_LARGE,
+                 bg=BG_COLOR, fg=TEXT_PRIMARY).pack(anchor='w', pady=(10, 3))
+        entry = tk.Entry(parent, font=FONT_MEDIUM, bg=INPUT_BG, show=show, width=50)
+        entry.pack(fill='x', ipady=4)
+        return entry
+
+    # ------------------------------------------------------------------
+    # TOGGLE DRIVER FIELDS
+    # ------------------------------------------------------------------
+    def _toggle_driver_fields(self):
         if self.user_type_var.get() == USER_TYPE_DRIVER:
-            self.driver_frame.pack(fill='x', pady=(0, PADDING_MEDIUM))
+            # Show driver fields just below the address field
+            self.driver_frame.pack(fill='x', after=self.address_text)
         else:
             self.driver_frame.pack_forget()
-    
-    def handle_registration(self):
-        """Handle registration form submission"""
-        
-        # Get all values
+
+    # ------------------------------------------------------------------
+    # REGISTRATION LOGIC
+    # ------------------------------------------------------------------
+    def _register(self):
         user_type = self.user_type_var.get()
         name = self.name_entry.get().strip()
         email = self.email_entry.get().strip()
         phone = self.phone_entry.get().strip()
-        address = self.address_text.get("1.0", tk.END).strip()
+        address = self.address_text.get("1.0", "end").strip()
         username = self.username_entry.get().strip()
         password = self.password_entry.get().strip()
-        confirm_password = self.confirm_password_entry.get().strip()
-        
-        # Validation
-        if not all([name, email, phone, address, username, password, confirm_password]):
+        conf_pass = self.conf_password_entry.get().strip()
+
+        # Required checks
+        if not all([name, email, phone, address, username, password, conf_pass]):
             messagebox.showerror("Error", ERROR_REQUIRED_FIELD)
             return
-        
+
         if not validate_email(email):
-            messagebox.showerror("Error", "Invalid email format!")
+            messagebox.showerror("Error", "Invalid email format")
             return
-        
+
         if not validate_phone(phone):
-            messagebox.showerror("Error", "Invalid phone number! Must be 10 digits.")
+            messagebox.showerror("Error", "Phone must be 10 digits")
             return
-        
+
         if len(password) < 6:
             messagebox.showerror("Error", ERROR_WEAK_PASSWORD)
             return
-        
-        if password != confirm_password:
+
+        if password != conf_pass:
             messagebox.showerror("Error", ERROR_PASSWORD_MISMATCH)
             return
-        
-        # Driver-specific validation
+
+        # Driver checks
+        license_num = None
         if user_type == USER_TYPE_DRIVER:
-            license_number = self.license_entry.get().strip()
-            if not license_number:
-                messagebox.showerror("Error", "License number is required for drivers!")
+            license_num = self.license_entry.get().strip()
+            if not validate_license(license_num):
+                messagebox.showerror("Error", "Invalid license number format")
                 return
-            if not validate_license(license_number):
-                messagebox.showerror("Error", "Invalid license number format! (8-15 alphanumeric characters)")
-                return
-        
-        # Create user account
-        success, message, user_id = self.user_ctrl.create_user(username, password, user_type)
-        
+
+        # Create user
+        success, msg, user_id = self.user_ctrl.create_user(username, password, user_type)
         if not success:
-            messagebox.showerror("Registration Failed", message)
+            messagebox.showerror("Error", msg)
             return
-        
-        # Create passenger or driver profile
+
+        # Create profile
         if user_type == USER_TYPE_PASSENGER:
-            success, message, profile_id = self.passenger_ctrl.create_passenger(
-                name, email, phone, address, user_id
-            )
-        else:  # Driver
-            success, message, profile_id = self.driver_ctrl.create_driver(
-                name, license_number, phone, email, user_id
-            )
-        
-        if success:
-            messagebox.showinfo(
-                "Success",
-                f"Registration successful!\n\nUsername: {username}\nYou can now login."
-            )
-            self.back_to_login()
+            ok, msg, pid = self.passenger_ctrl.create_passenger(name, email, phone, address, user_id)
         else:
-            # Rollback: delete user if profile creation failed
+            ok, msg, did = self.driver_ctrl.create_driver(name, license_num, phone, email, user_id)
+
+        if not ok:
             self.user_ctrl.delete_user(user_id)
-            messagebox.showerror("Registration Failed", f"Profile creation failed: {message}")
-    
-    def back_to_login(self):
-        """Close registration and show login window"""
+            messagebox.showerror("Error", msg)
+            return
+
+        messagebox.showinfo("Success", "Registration completed. You can now login.")
+        self._back()
+
+    # ------------------------------------------------------------------
+    # BACK TO LOGIN
+    # ------------------------------------------------------------------
+    def _back(self):
         self.root.destroy()
         self.login_window.deiconify()
-
-
-# Test the registration page
-if __name__ == "__main__":
-    root = tk.Tk()
-    root.withdraw()
-    
-    reg_window = tk.Toplevel()
-    app = RegistrationPage(reg_window, root)
-    reg_window.mainloop()

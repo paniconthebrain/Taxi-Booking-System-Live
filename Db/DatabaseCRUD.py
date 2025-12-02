@@ -202,14 +202,14 @@ class DatabaseCRUD(BaseDB):
                 return True
             
             # Insert default admin
-            hashed_password = self.hash_password(DEFAULT_ADMIN['password'])
+            password = DEFAULT_ADMIN['password']
             insert_query = """
                 INSERT INTO Login (Username, Password, User_Type)
                 VALUES (%s, %s, %s)
             """
             rows = self.execute_query(
                 insert_query,
-                (DEFAULT_ADMIN['username'], hashed_password, DEFAULT_ADMIN['user_type'])
+                (DEFAULT_ADMIN['username'], password, DEFAULT_ADMIN['user_type'])
             )
             
             if rows > 0:

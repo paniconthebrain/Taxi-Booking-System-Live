@@ -14,7 +14,9 @@ from config import (
     BOOKING_STATUS_IN_PROGRESS,
     BOOKING_STATUS_COMPLETED,
     BOOKING_STATUS_CANCELLED,
-    calculate_fare
+    calculate_fare,
+    DRIVER_AVAILABLE,
+    DRIVER_BUSY,
 )
 from datetime import datetime
 
@@ -250,14 +252,45 @@ class BookingController:
             tuple: (success: bool, message: str)
         """
         try:
-            query = """
+            # First, get current driver (if any) for this booking
+            select_query = "SELECT Driver_ID FROM Bookings WHERE Booking_ID = %s"
+            current_row = self.db.fetch_one(select_query, (booking_id,))
+            if not current_row:
+                return False, "Booking not found"
+
+            previous_driver_id = current_row.get("Driver_ID")
+
+            # Update booking with new driver and set status to Confirmed
+            update_booking_query = """
                 UPDATE Bookings 
                 SET Driver_ID = %s, Status = %s 
                 WHERE Booking_ID = %s
             """
-            rows = self.db.execute_query(query, (driver_id, BOOKING_STATUS_CONFIRMED, booking_id))
+            rows = self.db.execute_query(
+                update_booking_query,
+                (driver_id, BOOKING_STATUS_CONFIRMED, booking_id),
+            )
             
             if rows > 0:
+                # If there was a previous driver and it's different, set them back to Available
+                if previous_driver_id and previous_driver_id != driver_id:
+                    try:
+                        self.db.execute_query(
+                            "UPDATE Drivers SET Availability = %s WHERE Driver_ID = %s",
+                            (DRIVER_AVAILABLE, previous_driver_id),
+                        )
+                    except Exception as e:
+                        print(f"Warning: failed to set previous driver available: {e}")
+
+                # Set the newly assigned driver to Busy
+                try:
+                    self.db.execute_query(
+                        "UPDATE Drivers SET Availability = %s WHERE Driver_ID = %s",
+                        (DRIVER_BUSY, driver_id),
+                    )
+                except Exception as e:
+                    print(f"Warning: failed to set assigned driver busy: {e}")
+
                 return True, "Driver assigned successfully"
             else:
                 return False, "Booking not found"

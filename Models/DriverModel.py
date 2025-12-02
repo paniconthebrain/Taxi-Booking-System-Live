@@ -107,6 +107,15 @@ class DriverModel:
     def get_display_name(self):
         """Get formatted display name"""
         return f"{self.name} (License: {self.license_number})"
+
+    def get_status_color(self):
+        """Get a color representing current availability status"""
+        colors = {
+            DRIVER_AVAILABLE: "#27AE60",  # Green
+            DRIVER_BUSY: "#E67E22",       # Orange
+            DRIVER_OFFLINE: "#95A5A6",    # Gray
+        }
+        return colors.get(self.availability, "#95A5A6")
     
     def __str__(self):
         """String representation"""

@@ -35,7 +35,7 @@ class UserController:
         Returns:
             str: Hashed password
         """
-        return hashlib.sha256(password.encode()).hexdigest()
+        return (password)
     
     def authenticate_user(self, username, password):
         """
