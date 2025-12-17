@@ -15,10 +15,6 @@ from config import (
 
 
 class VehicleController:
-    """
-    Handles all vehicle-related operations
-    """
-    
     def __init__(self):
         """Initialize VehicleController with database connection"""
         self.db = BaseDB()
@@ -415,47 +411,3 @@ class VehicleController:
         """Close database connection"""
         self.db.disconnect()
 
-
-# Test the controller
-if __name__ == "__main__":
-    print("\n" + "="*60)
-    print("Testing VehicleController")
-    print("="*60 + "\n")
-    
-    controller = VehicleController()
-    
-    # Test 1: Create vehicle
-    print("1. Creating test vehicle...")
-    success, message, vehicle_id = controller.create_vehicle(
-        "Toyota Camry",
-        "KA01AB1234",
-        "Sedan",
-        "Blue",
-        2020,
-        None
-    )
-    print(f"   Result: {message}, Vehicle ID: {vehicle_id}")
-    
-    # Test 2: Get vehicle
-    if vehicle_id:
-        print("\n2. Getting vehicle by ID...")
-        vehicle = controller.get_vehicle_by_id(vehicle_id)
-        if vehicle:
-            print(f"   ✓ Found: {vehicle}")
-            print(f"   Description: {vehicle.get_full_description()}")
-        
-        # Test 3: Get unassigned vehicles
-        print("\n3. Getting unassigned vehicles...")
-        unassigned = controller.get_unassigned_vehicles()
-        print(f"   Unassigned vehicles: {len(unassigned)}")
-        
-        # Test 4: Delete vehicle
-        print("\n4. Deleting test vehicle...")
-        success, message = controller.delete_vehicle(vehicle_id)
-        print(f"   Result: {message}")
-    
-    controller.close()
-    
-    print("\n" + "="*60)
-    print("✓ VehicleController test complete")
-    print("="*60 + "\n")

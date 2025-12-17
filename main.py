@@ -9,18 +9,11 @@ def initialize_database():
         db = DatabaseCRUD()
         
         success = db.setup_database()
-        
-        if success:
-            db.get_database_info()
-            return db
-        else:
-            
-            return db
+        return db
         
     except Exception as e:
         traceback.print_exc()
         return None
-
 
 def launch_application():
     # Step 1: Initialize Database

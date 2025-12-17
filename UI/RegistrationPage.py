@@ -38,7 +38,7 @@ class RegistrationPage:
     # ------------------------------------------------------------------
     def _setup_window(self):
         self.root.title("Register - Taxi Booking System")
-        width, height = 500, 750
+        width, height = 500, 800
         sw = self.root.winfo_screenwidth()
         sh = self.root.winfo_screenheight()
         x = (sw - width) // 2
@@ -218,9 +218,6 @@ class RegistrationPage:
         messagebox.showinfo("Success", "Registration completed. You can now login.")
         self._back()
 
-    # ------------------------------------------------------------------
-    # BACK TO LOGIN
-    # ------------------------------------------------------------------
     def _back(self):
         self.root.destroy()
         self.login_window.deiconify()

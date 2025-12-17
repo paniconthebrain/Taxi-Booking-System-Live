@@ -1,44 +1,14 @@
-# Models/BookingModel.py
-"""
-Booking Model - Represents Bookings table
-"""
-
 from datetime import datetime
-from config import (
-    BOOKING_STATUS_PENDING,
-    BOOKING_STATUS_CONFIRMED,
-    BOOKING_STATUS_IN_PROGRESS,
-    BOOKING_STATUS_COMPLETED,
-    BOOKING_STATUS_CANCELLED,
-    calculate_fare,
-    CURRENCY_SYMBOL
+from config import (BOOKING_STATUS_PENDING,BOOKING_STATUS_CONFIRMED,BOOKING_STATUS_IN_PROGRESS,BOOKING_STATUS_COMPLETED,BOOKING_STATUS_CANCELLED,calculate_fare,CURRENCY_SYMBOL
 )
 
-
 class BookingModel:
-    """
-    Represents a booking/ride in the system
-    """
-    
+
     def __init__(self, booking_id=None, passenger_id=None, driver_id=None,
                  pickup_location=None, destination=None, status=None,
                  fare=None, distance_km=None, booking_date=None, 
                  completion_date=None):
-        """
-        Initialize Booking Model
-        
-        Args:
-            booking_id (int): Unique booking identifier
-            passenger_id (int): Reference to passenger
-            driver_id (int): Reference to assigned driver
-            pickup_location (str): Pickup address
-            destination (str): Destination address
-            status (str): Current booking status
-            fare (float): Calculated fare amount
-            distance_km (float): Distance in kilometers
-            booking_date (datetime): Booking creation timestamp
-            completion_date (datetime): Ride completion timestamp
-        """
+
         self.booking_id = booking_id
         self.passenger_id = passenger_id
         self.driver_id = driver_id

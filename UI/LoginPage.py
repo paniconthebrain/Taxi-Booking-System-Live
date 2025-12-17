@@ -294,8 +294,3 @@ class LoginPage:
         self.root.mainloop()
 
 
-# Test the login page
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = LoginPage(root)
-    app.run()

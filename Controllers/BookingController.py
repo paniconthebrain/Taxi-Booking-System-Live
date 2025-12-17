@@ -1,31 +1,10 @@
-# Controllers/BookingController.py
-"""
-Booking Controller - Handles booking/ride management operations
-"""
-
 from Db.base_db import BaseDB
 from Models.BookingModel import BookingModel
-from config import (
-    SUCCESS_REGISTRATION,
-    SUCCESS_UPDATE,
-    SUCCESS_DELETE,
-    BOOKING_STATUS_PENDING,
-    BOOKING_STATUS_CONFIRMED,
-    BOOKING_STATUS_IN_PROGRESS,
-    BOOKING_STATUS_COMPLETED,
-    BOOKING_STATUS_CANCELLED,
-    calculate_fare,
-    DRIVER_AVAILABLE,
-    DRIVER_BUSY,
-)
+from config import (SUCCESS_REGISTRATION,SUCCESS_UPDATE,SUCCESS_DELETE,BOOKING_STATUS_PENDING,BOOKING_STATUS_CONFIRMED,BOOKING_STATUS_IN_PROGRESS,BOOKING_STATUS_COMPLETED,BOOKING_STATUS_CANCELLED,calculate_fare,DRIVER_AVAILABLE,DRIVER_BUSY,)
 from datetime import datetime
 
-
 class BookingController:
-    """
-    Handles all booking-related operations
-    """
-    
+   
     def __init__(self):
         """Initialize BookingController with database connection"""
         self.db = BaseDB()
@@ -427,37 +406,3 @@ class BookingController:
     def close(self):
         """Close database connection"""
         self.db.disconnect()
-
-
-# Test the controller
-if __name__ == "__main__":
-    print("\n" + "="*60)
-    print("Testing BookingController")
-    print("="*60 + "\n")
-    
-    controller = BookingController()
-    
-    # Test 1: Create booking (need existing passenger_id)
-    print("1. Testing booking methods...")
-    print("   Note: Actual booking creation requires valid passenger_id")
-    
-    # Test 2: Get all bookings
-    print("\n2. Getting all bookings...")
-    bookings = controller.get_all_bookings()
-    print(f"   Total bookings: {len(bookings)}")
-    
-    # Test 3: Get pending bookings
-    print("\n3. Getting pending bookings...")
-    pending = controller.get_pending_bookings()
-    print(f"   Pending bookings: {len(pending)}")
-    
-    # Test 4: Get total revenue
-    print("\n4. Getting total revenue...")
-    revenue = controller.get_total_revenue()
-    print(f"   Total revenue: ₹ {revenue:.2f}")
-    
-    controller.close()
-    
-    print("\n" + "="*60)
-    print("✓ BookingController test complete")
-    print("="*60 + "\n")

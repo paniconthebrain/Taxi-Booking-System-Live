@@ -1827,17 +1827,3 @@ class AdminDashboard:
             self.login_root.destroy()
 
 
-# Test the dashboard
-if __name__ == "__main__":
-    # This is for testing only
-    from Models.UserModel import UserModel
-    
-    root = tk.Tk()
-    root.withdraw()
-    
-    # Create dummy user
-    dummy_user = UserModel(user_id=1, username="admin", user_type="Admin")
-    
-    dashboard_window = tk.Toplevel()
-    app = AdminDashboard(dashboard_window, dummy_user, root)
-    dashboard_window.mainloop()

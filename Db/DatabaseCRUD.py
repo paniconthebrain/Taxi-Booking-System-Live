@@ -1,9 +1,3 @@
-# Db/DatabaseCRUD.py
-"""
-Database Setup & Table Creation
-Creates all necessary tables and inserts default admin user
-"""
-
 from Db.base_db import BaseDB
 from config import (
     DEFAULT_ADMIN,
@@ -15,23 +9,16 @@ from config import (
     PAYMENT_STATUSES,
     DRIVER_AVAILABLE
 )
-import hashlib
+
 
 
 class DatabaseCRUD(BaseDB):
-    """
-    Handles database schema creation and initial setup
-    """
-    
+
     def __init__(self):
         super().__init__()
     
     def create_all_tables(self):
         """Create all tables required for the taxi booking system"""
-        print("\n" + "="*50)
-        print("Creating Database Tables...")
-        print("="*50)
-        
         try:
             self.create_login_table()
             self.create_passengers_table()
@@ -39,16 +26,9 @@ class DatabaseCRUD(BaseDB):
             self.create_vehicles_table()
             self.create_bookings_table()
             self.create_payments_table()
-            
-            print("="*50)
-            print("✓ All tables created successfully!")
-            print("="*50 + "\n")
             return True
-            
         except Exception as e:
-            print("="*50)
-            print(f"✗ Error creating tables: {e}")
-            print("="*50 + "\n")
+            print(f"Error creating tables: {e}")
             return False
     
     def create_login_table(self):
@@ -66,7 +46,6 @@ class DatabaseCRUD(BaseDB):
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         """
         self.execute_query(query)
-        print("✓ Login table created")
     
     def create_passengers_table(self):
         """Create Passengers table"""
@@ -86,7 +65,6 @@ class DatabaseCRUD(BaseDB):
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         """
         self.execute_query(query)
-        print("✓ Passengers table created")
     
     def create_drivers_table(self):
         """Create Drivers table"""
@@ -108,7 +86,6 @@ class DatabaseCRUD(BaseDB):
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         """
         self.execute_query(query)
-        print("✓ Drivers table created")
     
     def create_vehicles_table(self):
         """Create Vehicles table"""
@@ -129,7 +106,6 @@ class DatabaseCRUD(BaseDB):
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         """
         self.execute_query(query)
-        print("✓ Vehicles table created")
     
     def create_bookings_table(self):
         """Create Bookings table"""
@@ -155,7 +131,6 @@ class DatabaseCRUD(BaseDB):
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         """
         self.execute_query(query)
-        print("✓ Bookings table created")
     
     def create_payments_table(self):
         """Create Payments table"""
@@ -176,84 +151,49 @@ class DatabaseCRUD(BaseDB):
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         """
         self.execute_query(query)
-        print("✓ Payments table created")
-    
-    def hash_password(self, password):
-        """
-        Hash password using SHA-256
-        
-        Args:
-            password (str): Plain text password
-            
-        Returns:
-            str: Hashed password
-        """
-        return hashlib.sha256(password.encode()).hexdigest()
     
     def insert_default_admin(self):
         """Insert default admin user if not exists"""
         try:
-            # Check if admin already exists
             check_query = "SELECT User_ID FROM Login WHERE Username = %s"
             existing_admin = self.fetch_one(check_query, (DEFAULT_ADMIN['username'],))
             
             if existing_admin:
-                print(f"ℹ  Default admin already exists (User_ID: {existing_admin['User_ID']})")
+                print(f"Default admin already exists (User_ID: {existing_admin['User_ID']})")
                 return True
             
-            # Insert default admin
-            password = DEFAULT_ADMIN['password']
             insert_query = """
                 INSERT INTO Login (Username, Password, User_Type)
                 VALUES (%s, %s, %s)
             """
             rows = self.execute_query(
                 insert_query,
-                (DEFAULT_ADMIN['username'], password, DEFAULT_ADMIN['user_type'])
+                (DEFAULT_ADMIN['username'], DEFAULT_ADMIN['password'], DEFAULT_ADMIN['user_type'])
             )
             
             if rows > 0:
-                print(f"✓ Default admin created")
-                print(f"  Username: {DEFAULT_ADMIN['username']}")
-                print(f"  Password: {DEFAULT_ADMIN['password']}")
+                print(f"Default admin created: {DEFAULT_ADMIN['username']}")
                 return True
-            else:
-                print("✗ Failed to create default admin")
-                return False
+            return False
                 
         except Exception as e:
-            print(f"✗ Error creating default admin: {e}")
+            print(f"Error creating default admin: {e}")
             return False
     
     def setup_database(self):
         """Complete database setup - creates tables and default admin"""
-        print("\n" + "🚕 "*20)
-        print("TAXI BOOKING SYSTEM - DATABASE SETUP")
-        print("🚕 "*20 + "\n")
-        
         success = True
         
-        # Create tables
         if not self.create_all_tables():
             success = False
         
-        # Insert default admin
         if not self.insert_default_admin():
             success = False
         
         if success:
-            print("\n" + "="*50)
-            print("✓ Database setup completed successfully!")
-            print("="*50)
-            print("\nYou can now run the application.")
-            print(f"Default admin credentials:")
-            print(f"  Username: {DEFAULT_ADMIN['username']}")
-            print(f"  Password: {DEFAULT_ADMIN['password']}")
-            print("="*50 + "\n")
+            print("Database setup completed successfully!")
         else:
-            print("\n" + "="*50)
-            print("⚠  Database setup completed with warnings")
-            print("="*50 + "\n")
+            print("Database setup completed with warnings")
         
         return success
     
@@ -261,55 +201,23 @@ class DatabaseCRUD(BaseDB):
         """Drop all tables (use with caution!)"""
         tables = ['Payments', 'Bookings', 'Vehicles', 'Drivers', 'Passengers', 'Login']
         
-        print("\n" + "="*50)
-        print("⚠  WARNING: DROPPING ALL TABLES")
-        print("="*50)
-        
         for table in tables:
             try:
                 query = f"DROP TABLE IF EXISTS {table}"
                 self.execute_query(query)
-                print(f"✓ Dropped table: {table}")
+                print(f"Dropped table: {table}")
             except Exception as e:
-                print(f"✗ Error dropping table {table}: {e}")
+                print(f"Error dropping table {table}: {e}")
         
-        print("="*50)
-        print("✓ Database reset complete")
-        print("="*50 + "\n")
-    
-    def get_database_info(self):
-        """Get information about the current database"""
-        print("\n" + "="*50)
-        print("DATABASE INFORMATION")
-        print("="*50)
-        
-        tables = ['Login', 'Passengers', 'Drivers', 'Vehicles', 'Bookings', 'Payments']
-        
-        for table in tables:
-            if self.table_exists(table):
-                count = self.get_table_row_count(table)
-                print(f"✓ {table}: {count} records")
-            else:
-                print(f"✗ {table}: Table does not exist")
-        
-        print("="*50 + "\n")
+        print("Database reset complete")
 
 
-# Test and setup
 if __name__ == "__main__":
     try:
         db_setup = DatabaseCRUD()
         
-        # Uncomment the following line to reset database (CAUTION!)
-        # db_setup.reset_database()
-        
-        # Setup database
         db_setup.setup_database()
-        
-        # Show database info
-        db_setup.get_database_info()
-        
         db_setup.disconnect()
         
     except Exception as e:
-        print(f"\n✗ Setup failed: {e}\n")
+        print(f"Setup failed: {e}")

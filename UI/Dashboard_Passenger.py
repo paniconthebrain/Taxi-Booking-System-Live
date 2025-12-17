@@ -447,7 +447,6 @@ class PassengerDashboard:
             pady=10
         ).pack(side='left', padx=10)
 
-    
     def show_my_bookings(self):
         """Show user's bookings"""
         self.clear_content()
@@ -546,7 +545,6 @@ class PassengerDashboard:
         
         # Mousewheel
         canvas.bind_all("<MouseWheel>", lambda e: canvas.yview_scroll(int(-1*(e.delta/120)), "units"))
-
 
     def create_booking_card(self, parent, booking):
         """Create a booking card"""
@@ -702,7 +700,6 @@ class PassengerDashboard:
                 relief='flat',
                 command=lambda b=booking: self.cancel_booking(b)
             ).pack(side='right')
-
 
     def cancel_booking(self, booking):
         """Cancel a booking"""

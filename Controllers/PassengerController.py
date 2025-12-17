@@ -1,8 +1,3 @@
-# Controllers/PassengerController.py
-"""
-Passenger Controller - Handles passenger management operations
-"""
-
 from Db.base_db import BaseDB
 from Models.PassengerModel import PassengerModel
 from config import (
@@ -17,10 +12,7 @@ from config import (
 
 
 class PassengerController:
-    """
-    Handles all passenger-related operations
-    """
-    
+
     def __init__(self):
         """Initialize PassengerController with database connection"""
         self.db = BaseDB()
@@ -297,61 +289,3 @@ class PassengerController:
     def close(self):
         """Close database connection"""
         self.db.disconnect()
-
-
-# Test the controller
-if __name__ == "__main__":
-    print("\n" + "="*60)
-    print("Testing PassengerController")
-    print("="*60 + "\n")
-    
-    controller = PassengerController()
-    
-    # Test 1: Create passenger
-    print("1. Creating test passenger...")
-    success, message, passenger_id = controller.create_passenger(
-        "John Test",
-        "johntest@example.com",
-        "9876543210",
-        "123 Test Street",
-        None  # No user_id for this test
-    )
-    print(f"   Result: {message}, Passenger ID: {passenger_id}")
-    
-    # Test 2: Get passenger
-    if passenger_id:
-        print("\n2. Getting passenger by ID...")
-        passenger = controller.get_passenger_by_id(passenger_id)
-        if passenger:
-            print(f"   ✓ Found: {passenger}")
-            print(f"   Display Name: {passenger.get_display_name()}")
-        
-        # Test 3: Update passenger
-        print("\n3. Updating passenger...")
-        success, message = controller.update_passenger(
-            passenger_id,
-            name="John Updated",
-            address="456 New Street"
-        )
-        print(f"   Result: {message}")
-        
-        # Test 4: Search passengers
-        print("\n4. Searching passengers...")
-        results = controller.search_passengers("John")
-        print(f"   Found {len(results)} passengers")
-        
-        # Test 5: Delete passenger
-        print("\n5. Deleting test passenger...")
-        success, message = controller.delete_passenger(passenger_id)
-        print(f"   Result: {message}")
-    
-    # Test 6: Get all passengers
-    print("\n6. Getting all passengers...")
-    passengers = controller.get_all_passengers()
-    print(f"   Total passengers: {len(passengers)}")
-    
-    controller.close()
-    
-    print("\n" + "="*60)
-    print("✓ PassengerController test complete")
-    print("="*60 + "\n")

@@ -389,38 +389,3 @@ class PaymentController:
         """Close database connection"""
         self.db.disconnect()
 
-
-# Test the controller
-if __name__ == "__main__":
-    print("\n" + "="*60)
-    print("Testing PaymentController")
-    print("="*60 + "\n")
-    
-    controller = PaymentController()
-    
-    # Test 1: Get all payments
-    print("1. Getting all payments...")
-    payments = controller.get_all_payments()
-    print(f"   Total payments: {len(payments)}")
-    
-    # Test 2: Get pending payments
-    print("\n2. Getting pending payments...")
-    pending = controller.get_pending_payments()
-    print(f"   Pending payments: {len(pending)}")
-    
-    # Test 3: Get total revenue
-    print("\n3. Getting total revenue...")
-    revenue = controller.get_total_revenue()
-    print(f"   Total revenue: ₹ {revenue:.2f}")
-    
-    # Test 4: Get revenue by method
-    print("\n4. Getting revenue by payment method...")
-    revenue_by_method = controller.get_revenue_by_method()
-    for method, amount in revenue_by_method.items():
-        print(f"   {method}: ₹ {amount:.2f}")
-    
-    controller.close()
-    
-    print("\n" + "="*60)
-    print("✓ PaymentController test complete")
-    print("="*60 + "\n")
