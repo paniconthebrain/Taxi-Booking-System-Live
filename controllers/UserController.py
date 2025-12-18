@@ -10,7 +10,6 @@ from config import (
     USER_TYPE_DRIVER
 )
 
-
 class UserController:
     def __init__(self):
         self.db = BaseDB()

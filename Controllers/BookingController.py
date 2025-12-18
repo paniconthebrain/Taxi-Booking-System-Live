@@ -1,6 +1,8 @@
 from Db.base_db import BaseDB
 from Models.BookingModel import BookingModel
-from config import (SUCCESS_REGISTRATION,SUCCESS_UPDATE,SUCCESS_DELETE,BOOKING_STATUS_PENDING,BOOKING_STATUS_CONFIRMED,BOOKING_STATUS_IN_PROGRESS,BOOKING_STATUS_COMPLETED,BOOKING_STATUS_CANCELLED,calculate_fare,DRIVER_AVAILABLE,DRIVER_BUSY,)
+from config import (SUCCESS_REGISTRATION,SUCCESS_UPDATE,SUCCESS_DELETE,BOOKING_STATUS_PENDING
+                    ,BOOKING_STATUS_CONFIRMED,BOOKING_STATUS_IN_PROGRESS
+                    ,BOOKING_STATUS_COMPLETED,BOOKING_STATUS_CANCELLED,calculate_fare,DRIVER_AVAILABLE,DRIVER_BUSY,)
 from datetime import datetime
 
 class BookingController:
@@ -11,19 +13,6 @@ class BookingController:
     
     def create_booking(self, passenger_id, pickup_location, destination, 
                       distance_km=None, driver_id=None):
-        """
-        Create a new booking
-        
-        Args:
-            passenger_id (int): Passenger ID
-            pickup_location (str): Pickup address
-            destination (str): Destination address
-            distance_km (float): Distance in kilometers (optional)
-            driver_id (int): Assigned driver ID (optional)
-            
-        Returns:
-            tuple: (success: bool, message: str, booking_id: int)
-        """
         try:
             # Calculate fare if distance provided
             fare = calculate_fare(distance_km) if distance_km else None
@@ -51,15 +40,6 @@ class BookingController:
             return False, str(e), None
     
     def get_booking_by_id(self, booking_id):
-        """
-        Get booking by ID
-        
-        Args:
-            booking_id (int): Booking ID
-            
-        Returns:
-            BookingModel: Booking object or None
-        """
         try:
             query = "SELECT * FROM Bookings WHERE Booking_ID = %s"
             row = self.db.fetch_one(query, (booking_id,))
@@ -71,9 +51,6 @@ class BookingController:
     def get_all_bookings(self):
         """
         Get all bookings
-        
-        Returns:
-            list: List of BookingModel objects
         """
         try:
             query = "SELECT * FROM Bookings ORDER BY Booking_Date DESC"
@@ -86,12 +63,6 @@ class BookingController:
     def get_bookings_by_passenger(self, passenger_id):
         """
         Get all bookings for a passenger
-        
-        Args:
-            passenger_id (int): Passenger ID
-            
-        Returns:
-            list: List of BookingModel objects
         """
         try:
             query = """
@@ -108,12 +79,6 @@ class BookingController:
     def get_bookings_by_driver(self, driver_id):
         """
         Get all bookings for a driver
-        
-        Args:
-            driver_id (int): Driver ID
-            
-        Returns:
-            list: List of BookingModel objects
         """
         try:
             query = """
@@ -130,12 +95,6 @@ class BookingController:
     def get_bookings_by_status(self, status):
         """
         Get bookings by status
-        
-        Args:
-            status (str): Booking status
-            
-        Returns:
-            list: List of BookingModel objects
         """
         try:
             query = """
@@ -152,18 +111,12 @@ class BookingController:
     def get_pending_bookings(self):
         """
         Get all pending bookings
-        
-        Returns:
-            list: List of BookingModel objects
         """
         return self.get_bookings_by_status(BOOKING_STATUS_PENDING)
     
     def get_active_bookings(self):
         """
         Get all active bookings (Confirmed + In Progress)
-        
-        Returns:
-            list: List of BookingModel objects
         """
         try:
             query = """
@@ -180,22 +133,12 @@ class BookingController:
     def get_completed_bookings(self):
         """
         Get all completed bookings
-        
-        Returns:
-            list: List of BookingModel objects
         """
         return self.get_bookings_by_status(BOOKING_STATUS_COMPLETED)
     
     def update_booking_status(self, booking_id, status):
         """
         Update booking status
-        
-        Args:
-            booking_id (int): Booking ID
-            status (str): New status
-            
-        Returns:
-            tuple: (success: bool, message: str)
         """
         try:
             # If completed, set completion date
@@ -222,13 +165,6 @@ class BookingController:
     def assign_driver(self, booking_id, driver_id):
         """
         Assign driver to booking
-        
-        Args:
-            booking_id (int): Booking ID
-            driver_id (int): Driver ID
-            
-        Returns:
-            tuple: (success: bool, message: str)
         """
         try:
             # First, get current driver (if any) for this booking
@@ -282,18 +218,6 @@ class BookingController:
                       distance_km=None, fare=None, status=None, driver_id=None):
         """
         Update booking information
-        
-        Args:
-            booking_id (int): Booking ID
-            pickup_location (str): New pickup location (optional)
-            destination (str): New destination (optional)
-            distance_km (float): New distance (optional)
-            fare (float): New fare (optional)
-            status (str): New status (optional)
-            driver_id (int): New driver ID (optional)
-            
-        Returns:
-            tuple: (success: bool, message: str)
         """
         try:
             # Get current booking
@@ -337,36 +261,18 @@ class BookingController:
     def cancel_booking(self, booking_id):
         """
         Cancel a booking
-        
-        Args:
-            booking_id (int): Booking ID
-            
-        Returns:
-            tuple: (success: bool, message: str)
         """
         return self.update_booking_status(booking_id, BOOKING_STATUS_CANCELLED)
     
     def complete_booking(self, booking_id):
         """
         Mark booking as completed
-        
-        Args:
-            booking_id (int): Booking ID
-            
-        Returns:
-            tuple: (success: bool, message: str)
         """
         return self.update_booking_status(booking_id, BOOKING_STATUS_COMPLETED)
     
     def delete_booking(self, booking_id):
         """
         Delete booking
-        
-        Args:
-            booking_id (int): Booking ID
-            
-        Returns:
-            tuple: (success: bool, message: str)
         """
         try:
             query = "DELETE FROM Bookings WHERE Booking_ID = %s"

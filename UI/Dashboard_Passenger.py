@@ -19,10 +19,6 @@ class PassengerDashboard:
     def __init__(self, root, user, login_root):
         """
         Initialize Passenger Dashboard
-        
-        Args:
-            root: Dashboard window
-            user: Logged in user object
             login_root: Login window reference
         """
         self.root = root

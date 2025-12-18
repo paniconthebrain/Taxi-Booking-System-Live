@@ -2,40 +2,18 @@
 """
 Login Page - User authentication interface
 """
-
 import tkinter as tk
 from tkinter import messagebox
 from Controllers.UserController import UserController
-from config import (
-    LOGIN_WINDOW_WIDTH,
-    LOGIN_WINDOW_HEIGHT,
-    PRIMARY_COLOR,
-    SECONDARY_COLOR,
-    BG_COLOR,
-    TEXT_PRIMARY,
-    TEXT_LIGHT,
-    FONT_LARGE_HEADING,
-    FONT_LARGE,
-    FONT_MEDIUM,
-    FONT_NORMAL_REGULAR,
-    BTN_PRIMARY,
-    BTN_PRIMARY_HOVER,
-    INPUT_BG,
-    INPUT_BORDER,
-    PADDING_LARGE,
-    PADDING_MEDIUM,
-    ERROR_INVALID_CREDENTIALS,
-    USER_TYPE_ADMIN,
-    USER_TYPE_PASSENGER,
-    USER_TYPE_DRIVER
+from config import (LOGIN_WINDOW_WIDTH,LOGIN_WINDOW_HEIGHT,PRIMARY_COLOR,SECONDARY_COLOR,BG_COLOR,TEXT_PRIMARY,TEXT_LIGHT,FONT_LARGE_HEADING
+                    ,FONT_LARGE,FONT_MEDIUM,FONT_NORMAL_REGULAR,BTN_PRIMARY,BTN_PRIMARY_HOVER,INPUT_BG,INPUT_BORDER,PADDING_LARGE,PADDING_MEDIUM
+                    ,ERROR_INVALID_CREDENTIALS,USER_TYPE_ADMIN,USER_TYPE_PASSENGER,USER_TYPE_DRIVER
 )
-
 
 class LoginPage:
     """
     Login interface for user authentication
     """
-    
     def __init__(self, root):
         """
         Initialize Login Page

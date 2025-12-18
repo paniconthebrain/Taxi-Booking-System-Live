@@ -9,9 +9,6 @@ from config import (
     PAYMENT_STATUSES,
     DRIVER_AVAILABLE
 )
-
-
-
 class DatabaseCRUD(BaseDB):
 
     def __init__(self):
@@ -29,8 +26,7 @@ class DatabaseCRUD(BaseDB):
             return True
         except Exception as e:
             print(f"Error creating tables: {e}")
-            return False
-    
+            return False    
     def create_login_table(self):
         """Create Login table for user authentication"""
         user_types_enum = "', '".join(USER_TYPES)
@@ -160,8 +156,7 @@ class DatabaseCRUD(BaseDB):
             
             if existing_admin:
                 print(f"Default admin already exists (User_ID: {existing_admin['User_ID']})")
-                return True
-            
+                return True           
             insert_query = """
                 INSERT INTO Login (Username, Password, User_Type)
                 VALUES (%s, %s, %s)
@@ -169,8 +164,7 @@ class DatabaseCRUD(BaseDB):
             rows = self.execute_query(
                 insert_query,
                 (DEFAULT_ADMIN['username'], DEFAULT_ADMIN['password'], DEFAULT_ADMIN['user_type'])
-            )
-            
+            )            
             if rows > 0:
                 print(f"Default admin created: {DEFAULT_ADMIN['username']}")
                 return True
@@ -193,8 +187,7 @@ class DatabaseCRUD(BaseDB):
         if success:
             print("Database setup completed successfully!")
         else:
-            print("Database setup completed with warnings")
-        
+            print("Database setup completed with warnings")        
         return success
     
     def reset_database(self):
@@ -210,7 +203,6 @@ class DatabaseCRUD(BaseDB):
                 print(f"Error dropping table {table}: {e}")
         
         print("Database reset complete")
-
 
 if __name__ == "__main__":
     try:

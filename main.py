@@ -14,7 +14,6 @@ def initialize_database():
     except Exception as e:
         traceback.print_exc()
         return None
-
 def launch_application():
     # Step 1: Initialize Database
     db = initialize_database()
@@ -34,8 +33,8 @@ def launch_application():
         print("Make sure all UI files are created properly.")
     except Exception as e:
         print(f"Error launching UI: {e}")
-        traceback.print_exc()
-    
+        traceback.print_exc()    
+        
 def main():
     try:
         launch_application()

@@ -22,14 +22,6 @@ class PaymentModel:
                  payment_method=None, payment_status=None, payment_date=None):
         """
         Initialize Payment Model
-        
-        Args:
-            payment_id (int): Unique payment identifier
-            booking_id (int): Reference to booking
-            amount (float): Payment amount
-            payment_method (str): Method of payment
-            payment_status (str): Current payment status
-            payment_date (datetime): Payment timestamp
         """
         self.payment_id = payment_id
         self.booking_id = booking_id
@@ -42,12 +34,6 @@ class PaymentModel:
     def from_db_row(row):
         """
         Create PaymentModel instance from database row
-        
-        Args:
-            row (dict): Database row as dictionary
-            
-        Returns:
-            PaymentModel: Payment model instance
         """
         if not row:
             return None
@@ -64,9 +50,6 @@ class PaymentModel:
     def to_dict(self):
         """
         Convert model to dictionary
-        
-        Returns:
-            dict: Payment data as dictionary
         """
         return {
             'payment_id': self.payment_id,

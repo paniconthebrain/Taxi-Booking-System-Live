@@ -1,7 +1,6 @@
 # UI/RegistrationPage.py
 import tkinter as tk
 from tkinter import messagebox
-
 from Controllers.UserController import UserController
 from Controllers.PassengerController import PassengerController
 from Controllers.DriverController import DriverController
@@ -14,7 +13,6 @@ from config import (
     validate_email, validate_phone, validate_license,
     ERROR_REQUIRED_FIELD, ERROR_WEAK_PASSWORD, ERROR_PASSWORD_MISMATCH
 )
-
 
 class RegistrationPage:
 
@@ -32,7 +30,7 @@ class RegistrationPage:
 
         self._setup_window()
         self._build_ui()
-
+        
     # ------------------------------------------------------------------
     # WINDOW SETUP
     # ------------------------------------------------------------------

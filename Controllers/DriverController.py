@@ -1,28 +1,12 @@
 # Controllers/DriverController.py
-"""
-Driver Controller - Handles driver management operations
-"""
-
+"""Driver Controller - Handles driver management operations"""
 from Db.base_db import BaseDB
 from Models.DriverModel import DriverModel
-from config import (
-    ERROR_LICENSE_EXISTS,
-    ERROR_PHONE_EXISTS,
-    SUCCESS_REGISTRATION,
-    SUCCESS_UPDATE,
-    SUCCESS_DELETE,
-    DRIVER_AVAILABLE,
-    DRIVER_BUSY,
-    DRIVER_OFFLINE,
-    validate_phone,
-    validate_license
+from config import (ERROR_LICENSE_EXISTS,ERROR_PHONE_EXISTS,SUCCESS_REGISTRATION,SUCCESS_UPDATE,SUCCESS_DELETE,DRIVER_AVAILABLE
+                    ,DRIVER_BUSY,DRIVER_OFFLINE,validate_phone,validate_license
 )
-
-
 class DriverController:
-    """
-    Handles all driver-related operations
-    """
+    """Handles all driver-related operations"""
     
     def __init__(self):
         """Initialize DriverController with database connection"""
@@ -30,47 +14,26 @@ class DriverController:
     
     def create_driver(self, name, license_number, phone, email, user_id, 
                      availability=DRIVER_AVAILABLE):
-        """
-        Create a new driver
-        
-        Args:
-            name (str): Driver name
-            license_number (str): License number
-            phone (str): Phone number
-            email (str): Email address
-            user_id (int): Reference to Login table
-            availability (str): Initial availability status
-            
-        Returns:
-            tuple: (success: bool, message: str, driver_id: int)
-        """
+        """ Create a new driver"""
         try:
             # Validate phone
             if not validate_phone(phone):
                 return False, "Invalid phone number", None
-            
             # Validate license
             if not validate_license(license_number):
                 return False, "Invalid license number format", None
-            
             # Check if license already exists
             if self.license_exists(license_number):
                 return False, ERROR_LICENSE_EXISTS, None
-            
             # Check if phone already exists
             if self.phone_exists(phone):
                 return False, ERROR_PHONE_EXISTS, None
-            
             # Insert driver
-            query = """
-                INSERT INTO Drivers (Name, License_Number, Phone, Email, Availability, User_ID)
-                VALUES (%s, %s, %s, %s, %s, %s)
-            """
+            query = """INSERT INTO Drivers (Name, License_Number, Phone, Email, Availability, User_ID) VALUES (%s, %s, %s, %s, %s, %s) """
             rows = self.db.execute_query(
                 query, 
                 (name, license_number.upper(), phone, email, availability, user_id)
             )
-            
             if rows > 0:
                 driver_id = self.db.get_last_insert_id()
                 return True, SUCCESS_REGISTRATION, driver_id
@@ -82,15 +45,7 @@ class DriverController:
             return False, str(e), None
     
     def get_driver_by_id(self, driver_id):
-        """
-        Get driver by ID
-        
-        Args:
-            driver_id (int): Driver ID
-            
-        Returns:
-            DriverModel: Driver object or None
-        """
+        """Get driver by ID """
         try:
             query = "SELECT * FROM Drivers WHERE Driver_ID = %s"
             row = self.db.fetch_one(query, (driver_id,))
@@ -100,15 +55,7 @@ class DriverController:
             return None
     
     def get_driver_by_user_id(self, user_id):
-        """
-        Get driver by user ID
-        
-        Args:
-            user_id (int): User ID from Login table
-            
-        Returns:
-            DriverModel: Driver object or None
-        """
+        """ Get driver by user ID """
         try:
             query = "SELECT * FROM Drivers WHERE User_ID = %s"
             row = self.db.fetch_one(query, (user_id,))
@@ -118,15 +65,7 @@ class DriverController:
             return None
     
     def get_driver_by_license(self, license_number):
-        """
-        Get driver by license number
-        
-        Args:
-            license_number (str): License number
-            
-        Returns:
-            DriverModel: Driver object or None
-        """
+        """        Get driver by license number        """
         try:
             query = "SELECT * FROM Drivers WHERE License_Number = %s"
             row = self.db.fetch_one(query, (license_number.upper(),))
@@ -136,12 +75,7 @@ class DriverController:
             return None
     
     def get_all_drivers(self):
-        """
-        Get all drivers
-        
-        Returns:
-            list: List of DriverModel objects
-        """
+        """        Get all drivers                """
         try:
             query = "SELECT * FROM Drivers ORDER BY Created_At DESC"
             rows = self.db.fetch_all(query)
@@ -151,18 +85,9 @@ class DriverController:
             return []
     
     def get_available_drivers(self):
-        """
-        Get all available drivers
-        
-        Returns:
-            list: List of available DriverModel objects
-        """
+        """        Get all available drivers        """
         try:
-            query = """
-                SELECT * FROM Drivers 
-                WHERE Availability = %s 
-                ORDER BY Name
-            """
+            query = """SELECT * FROM Drivers WHERE Availability = %s ORDER BY Name"""
             rows = self.db.fetch_all(query, (DRIVER_AVAILABLE,))
             return [DriverModel.from_db_row(row) for row in rows]
         except Exception as e:
@@ -170,15 +95,7 @@ class DriverController:
             return []
     
     def get_drivers_by_status(self, availability):
-        """
-        Get drivers by availability status
-        
-        Args:
-            availability (str): Availability status
-            
-        Returns:
-            list: List of DriverModel objects
-        """
+        """        Get drivers by availability status        """
         try:
             query = "SELECT * FROM Drivers WHERE Availability = %s ORDER BY Name"
             rows = self.db.fetch_all(query, (availability,))
@@ -188,21 +105,9 @@ class DriverController:
             return []
     
     def search_drivers(self, search_term):
-        """
-        Search drivers by name, license, or phone
-        
-        Args:
-            search_term (str): Search term
-            
-        Returns:
-            list: List of DriverModel objects
-        """
+        """        Search drivers by name, license, or phone        """
         try:
-            query = """
-                SELECT * FROM Drivers 
-                WHERE Name LIKE %s OR License_Number LIKE %s OR Phone LIKE %s
-                ORDER BY Name
-            """
+            query = """ SELECT * FROM Drivers  WHERE Name LIKE %s OR License_Number LIKE %s OR Phone LIKE %s ORDER BY Name"""
             search_pattern = f"%{search_term}%"
             rows = self.db.fetch_all(query, (search_pattern, search_pattern, search_pattern))
             return [DriverModel.from_db_row(row) for row in rows]
@@ -212,20 +117,7 @@ class DriverController:
     
     def update_driver(self, driver_id, name=None, license_number=None,
                      phone=None, email=None, availability=None):
-        """
-        Update driver information
-        
-        Args:
-            driver_id (int): Driver ID
-            name (str): New name (optional)
-            license_number (str): New license (optional)
-            phone (str): New phone (optional)
-            email (str): New email (optional)
-            availability (str): New availability (optional)
-            
-        Returns:
-            tuple: (success: bool, message: str)
-        """
+        """        Update driver information        """
         try:
             # Get current driver data
             driver = self.get_driver_by_id(driver_id)
@@ -254,17 +146,9 @@ class DriverController:
                     return False, ERROR_LICENSE_EXISTS
             
             # Update driver
-            query = """
-                UPDATE Drivers 
-                SET Name = %s, License_Number = %s, Phone = %s, 
-                    Email = %s, Availability = %s
-                WHERE Driver_ID = %s
-            """
-            rows = self.db.execute_query(
-                query, 
-                (name, license_number.upper(), phone, email, availability, driver_id)
+            query = """ UPDATE Drivers  SET Name = %s, License_Number = %s, Phone = %s, Email = %s, Availability = %s WHERE Driver_ID = %s """
+            rows = self.db.execute_query( query,  (name, license_number.upper(), phone, email, availability, driver_id)
             )
-            
             if rows > 0:
                 return True, SUCCESS_UPDATE
             else:
@@ -275,16 +159,7 @@ class DriverController:
             return False, str(e)
     
     def update_driver_availability(self, driver_id, availability):
-        """
-        Update driver availability status
-        
-        Args:
-            driver_id (int): Driver ID
-            availability (str): New availability status
-            
-        Returns:
-            bool: True if successful
-        """
+        """Update driver availability status"""
         try:
             query = "UPDATE Drivers SET Availability = %s WHERE Driver_ID = %s"
             rows = self.db.execute_query(query, (availability, driver_id))
@@ -294,15 +169,7 @@ class DriverController:
             return False
     
     def delete_driver(self, driver_id):
-        """
-        Delete driver
-        
-        Args:
-            driver_id (int): Driver ID
-            
-        Returns:
-            tuple: (success: bool, message: str)
-        """
+        """Delete driver"""
         try:
             query = "DELETE FROM Drivers WHERE Driver_ID = %s"
             rows = self.db.execute_query(query, (driver_id,))
@@ -317,15 +184,7 @@ class DriverController:
             return False, str(e)
     
     def license_exists(self, license_number):
-        """
-        Check if license already exists
-        
-        Args:
-            license_number (str): License to check
-            
-        Returns:
-            bool: True if license exists
-        """
+        """Check if license already exists"""
         try:
             query = "SELECT Driver_ID FROM Drivers WHERE License_Number = %s"
             result = self.db.fetch_one(query, (license_number.upper(),))
@@ -334,15 +193,7 @@ class DriverController:
             return False
     
     def phone_exists(self, phone):
-        """
-        Check if phone already exists
-        
-        Args:
-            phone (str): Phone to check
-            
-        Returns:
-            bool: True if phone exists
-        """
+        """Check if phone already exists"""
         try:
             query = "SELECT Driver_ID FROM Drivers WHERE Phone = %s"
             result = self.db.fetch_one(query, (phone,))
@@ -351,12 +202,7 @@ class DriverController:
             return False
     
     def get_total_drivers_count(self):
-        """
-        Get total number of drivers
-        
-        Returns:
-            int: Total driver count
-        """
+        """Get total number of drivers"""
         try:
             query = "SELECT COUNT(*) as count FROM Drivers"
             result = self.db.fetch_one(query)
@@ -365,12 +211,7 @@ class DriverController:
             return 0
     
     def get_available_drivers_count(self):
-        """
-        Get count of available drivers
-        
-        Returns:
-            int: Available driver count
-        """
+        """Get count of available drivers"""
         try:
             query = "SELECT COUNT(*) as count FROM Drivers WHERE Availability = %s"
             result = self.db.fetch_one(query, (DRIVER_AVAILABLE,))

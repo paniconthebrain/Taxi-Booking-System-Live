@@ -24,16 +24,9 @@ class BookingModel:
     def from_db_row(row):
         """
         Create BookingModel instance from database row
-        
-        Args:
-            row (dict): Database row as dictionary
-            
-        Returns:
-            BookingModel: Booking model instance
         """
         if not row:
             return None
-        
         return BookingModel(
             booking_id=row.get('Booking_ID'),
             passenger_id=row.get('Passenger_ID'),
@@ -46,13 +39,9 @@ class BookingModel:
             booking_date=row.get('Booking_Date'),
             completion_date=row.get('Completion_Date')
         )
-    
     def to_dict(self):
         """
         Convert model to dictionary
-        
-        Returns:
-            dict: Booking data as dictionary
         """
         return {
             'booking_id': self.booking_id,
@@ -70,9 +59,6 @@ class BookingModel:
     def calculate_and_set_fare(self, distance_km):
         """
         Calculate and set fare based on distance
-        
-        Args:
-            distance_km (float): Distance in kilometers
         """
         self.distance_km = distance_km
         self.fare = calculate_fare(distance_km)

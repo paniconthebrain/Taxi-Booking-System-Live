@@ -9,8 +9,6 @@ from config import (
     validate_email,
     validate_phone
 )
-
-
 class PassengerController:
 
     def __init__(self):
@@ -20,34 +18,20 @@ class PassengerController:
     def create_passenger(self, name, email, phone, address, user_id):
         """
         Create a new passenger
-        
-        Args:
-            name (str): Passenger name
-            email (str): Email address
-            phone (str): Phone number
-            address (str): Home address
-            user_id (int): Reference to Login table
-            
-        Returns:
-            tuple: (success: bool, message: str, passenger_id: int)
         """
         try:
             # Validate email
             if not validate_email(email):
-                return False, "Invalid email format", None
-            
+                return False, "Invalid email format", None            
             # Validate phone
             if not validate_phone(phone):
-                return False, "Invalid phone number", None
-            
+                return False, "Invalid phone number", None            
             # Check if email already exists
             if self.email_exists(email):
-                return False, ERROR_EMAIL_EXISTS, None
-            
+                return False, ERROR_EMAIL_EXISTS, None            
             # Check if phone already exists
             if self.phone_exists(phone):
-                return False, ERROR_PHONE_EXISTS, None
-            
+                return False, ERROR_PHONE_EXISTS, None            
             # Insert passenger
             query = """
                 INSERT INTO Passengers (Name, Email, Phone, Address, User_ID)
@@ -68,12 +52,6 @@ class PassengerController:
     def get_passenger_by_id(self, passenger_id):
         """
         Get passenger by ID
-        
-        Args:
-            passenger_id (int): Passenger ID
-            
-        Returns:
-            PassengerModel: Passenger object or None
         """
         try:
             query = "SELECT * FROM Passengers WHERE Passenger_ID = %s"
@@ -86,12 +64,6 @@ class PassengerController:
     def get_passenger_by_user_id(self, user_id):
         """
         Get passenger by user ID
-        
-        Args:
-            user_id (int): User ID from Login table
-            
-        Returns:
-            PassengerModel: Passenger object or None
         """
         try:
             query = "SELECT * FROM Passengers WHERE User_ID = %s"
@@ -104,12 +76,6 @@ class PassengerController:
     def get_passenger_by_email(self, email):
         """
         Get passenger by email
-        
-        Args:
-            email (str): Email address
-            
-        Returns:
-            PassengerModel: Passenger object or None
         """
         try:
             query = "SELECT * FROM Passengers WHERE Email = %s"
@@ -122,9 +88,6 @@ class PassengerController:
     def get_all_passengers(self):
         """
         Get all passengers
-        
-        Returns:
-            list: List of PassengerModel objects
         """
         try:
             query = "SELECT * FROM Passengers ORDER BY Created_At DESC"
@@ -135,69 +98,39 @@ class PassengerController:
             return []
     
     def search_passengers(self, search_term):
-        """
-        Search passengers by name, email, or phone
-        
-        Args:
-            search_term (str): Search term
-            
-        Returns:
-            list: List of PassengerModel objects
-        """
+        """Search passengers by name, email, or phone"""
         try:
-            query = """
-                SELECT * FROM Passengers 
-                WHERE Name LIKE %s OR Email LIKE %s OR Phone LIKE %s
-                ORDER BY Name
-            """
+            query = """SELECT * FROM Passengers WHERE Name LIKE %s OR Email LIKE %s OR Phone LIKE %s ORDER BY Name"""
             search_pattern = f"%{search_term}%"
             rows = self.db.fetch_all(query, (search_pattern, search_pattern, search_pattern))
             return [PassengerModel.from_db_row(row) for row in rows]
         except Exception as e:
             print(f"Search passengers error: {e}")
-            return []
-    
-    def update_passenger(self, passenger_id, name=None, email=None, 
-                        phone=None, address=None):
-        """
-        Update passenger information
-        
-        Args:
-            passenger_id (int): Passenger ID
-            name (str): New name (optional)
-            email (str): New email (optional)
-            phone (str): New phone (optional)
-            address (str): New address (optional)
-            
-        Returns:
-            tuple: (success: bool, message: str)
-        """
+            return []    
+    def update_passenger(self, passenger_id, name=None, email=None,phone=None, address=None):
+        """Update passenger information"""
         try:
             # Get current passenger data
             passenger = self.get_passenger_by_id(passenger_id)
             if not passenger:
-                return False, "Passenger not found"
-            
+                return False, "Passenger not found"            
             # Use current values if new ones not provided
             name = name or passenger.name
             email = email or passenger.email
             phone = phone or passenger.phone
-            address = address or passenger.address
-            
+            address = address or passenger.address            
             # Validate email if changed
             if email != passenger.email:
                 if not validate_email(email):
                     return False, "Invalid email format"
                 if self.email_exists(email):
-                    return False, ERROR_EMAIL_EXISTS
-            
+                    return False, ERROR_EMAIL_EXISTS            
             # Validate phone if changed
             if phone != passenger.phone:
                 if not validate_phone(phone):
                     return False, "Invalid phone number"
                 if self.phone_exists(phone):
-                    return False, ERROR_PHONE_EXISTS
-            
+                    return False, ERROR_PHONE_EXISTS            
             # Update passenger
             query = """
                 UPDATE Passengers 
@@ -218,12 +151,6 @@ class PassengerController:
     def delete_passenger(self, passenger_id):
         """
         Delete passenger
-        
-        Args:
-            passenger_id (int): Passenger ID
-            
-        Returns:
-            tuple: (success: bool, message: str)
         """
         try:
             query = "DELETE FROM Passengers WHERE Passenger_ID = %s"
@@ -241,12 +168,6 @@ class PassengerController:
     def email_exists(self, email):
         """
         Check if email already exists
-        
-        Args:
-            email (str): Email to check
-            
-        Returns:
-            bool: True if email exists
         """
         try:
             query = "SELECT Passenger_ID FROM Passengers WHERE Email = %s"
@@ -258,12 +179,6 @@ class PassengerController:
     def phone_exists(self, phone):
         """
         Check if phone already exists
-        
-        Args:
-            phone (str): Phone to check
-            
-        Returns:
-            bool: True if phone exists
         """
         try:
             query = "SELECT Passenger_ID FROM Passengers WHERE Phone = %s"
@@ -275,9 +190,6 @@ class PassengerController:
     def get_total_passengers_count(self):
         """
         Get total number of passengers
-        
-        Returns:
-            int: Total passenger count
         """
         try:
             query = "SELECT COUNT(*) as count FROM Passengers"

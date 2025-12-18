@@ -1,30 +1,12 @@
-# Models/PassengerModel.py
-"""
-Passenger Model - Represents Passengers table
-"""
-
 from datetime import datetime
 
 
 class PassengerModel:
-    """
-    Represents a passenger in the system
-    """
+    """Passenger model."""
     
     def __init__(self, passenger_id=None, name=None, email=None, 
                  phone=None, address=None, user_id=None, created_at=None):
-        """
-        Initialize Passenger Model
-        
-        Args:
-            passenger_id (int): Unique passenger identifier
-            name (str): Passenger's full name
-            email (str): Email address
-            phone (str): Phone number
-            address (str): Home address
-            user_id (int): Reference to Login table
-            created_at (datetime): Registration timestamp
-        """
+        """Initialize passenger model."""
         self.passenger_id = passenger_id
         self.name = name
         self.email = email
@@ -35,15 +17,7 @@ class PassengerModel:
     
     @staticmethod
     def from_db_row(row):
-        """
-        Create PassengerModel instance from database row
-        
-        Args:
-            row (dict): Database row as dictionary
-            
-        Returns:
-            PassengerModel: Passenger model instance
-        """
+        """Create model instance from database row."""
         if not row:
             return None
         
@@ -58,12 +32,7 @@ class PassengerModel:
         )
     
     def to_dict(self):
-        """
-        Convert model to dictionary
-        
-        Returns:
-            dict: Passenger data as dictionary
-        """
+        """Convert model to dictionary."""
         return {
             'passenger_id': self.passenger_id,
             'name': self.name,
@@ -75,13 +44,13 @@ class PassengerModel:
         }
     
     def get_display_name(self):
-        """Get formatted display name"""
+        """Get formatted display name."""
         return f"{self.name} ({self.email})"
     
     def __str__(self):
-        """String representation"""
+        """String representation."""
         return f"Passenger(ID={self.passenger_id}, Name={self.name}, Email={self.email})"
     
     def __repr__(self):
-        """Developer representation"""
+        """Developer representation."""
         return self.__str__()
